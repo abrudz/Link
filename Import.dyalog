@@ -1,0 +1,1 @@
+ {count}←Import(ns path)

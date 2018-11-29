@@ -1,0 +1,1 @@
+ {count}←Export(ns path)
