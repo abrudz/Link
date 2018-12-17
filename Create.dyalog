@@ -68,7 +68,7 @@
                              :EndIf
 
                              linkDef←⎕SE.⎕NS opts
-                             linkDef.⎕DF'[Link]'
+                             linkDef.⎕DF'[',ns,' ',('' '→' '←' '←→'⊃⍨'none' 'ns' 'dir' 'both'⍳⊂opts.watch),' ',(∊1 ⎕NPARTS dir),']' ⍝ '[Link]'
                              ns←⍕ns
                              'linkDef'⎕NS'ns' 'dir' 'inFail' 'outFail'
                              ⎕SE.Link.Links,←linkDef
