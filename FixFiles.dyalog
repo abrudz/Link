@@ -1,8 +1,8 @@
- (inFail fsw)←{opts}FixFiles(target source);Slash;cands;candLengths;name;File;d;f;e;list;Where;Begins;hideBit;hidden;RightExtn;Files;files;dirs;order;Path;RemDir;paths;Nss;DotSlash;nss;NsExpr;PadThis;Target ⍝ Load items from files in folders
- DefaultOpts'opts'⎕NS ⍬ d
+ (inFail fsw)←{opts}FixFiles(target source);Slash;cands;candLengths;name;File;d;f;e;list;Where;Begins;hideBit;hidden;RightExtn;Files;files;dirs;order;Path;RemDir;paths;Nss;DotSlash;nss;NsExpr;PadThis;Target;Parts ⍝ Load items from files in folders
+ opts←DefaultOpts'opts'⎕NS ⍬
 
  Slash←{⍵∊'/\'}                             ⍝ Mark slashes
- Parts←{~⍵⊆⍨Slash ⍵}                          ⍝ Path parts
+ Parts←{⍵⊆⍨~Slash ⍵}                          ⍝ Path parts
 
  source↓⍨←-Slash⊃⌽source                  ⍝ Remove slash from end
  cands←⊃⎕NINFO⍠1⊢source,'*'               ⍝ normalised source candidates
@@ -41,11 +41,11 @@
      list←list Where¨⊂~∨⌿hidden∘.Begins⊃list  ⍝ filter away things that come below hidden things
      list↓⍨←¯1                                ⍝ remove hideBit column
 
-     RightExtn←{opts.fileExtensions∊⍨⊂1↓⊃⌽⎕NPARTS ⍵}                ⍝ Ends with specified extension?
+     RightExtn←{opts.codeExtensions∊⍨⊂1↓⊃⌽⎕NPARTS ⍵}                ⍝ Ends with specified extension?
 
-     Files←{⍵ Where RightExtn¨⍵}                  ⍝ Those that end with specified extension
+     Files←{⍵ Where RightExtn¨⍵}              ⍝ Those that end with specified extension
 
-     files←Files⊃list                         ⍝ first column is filename
+     files←Files⊃Where/2=@2⊢list             ⍝ second column has 2 for files; first column is filename
      dirs←⊃Where/1=@2⊢list                    ⍝ second column has 1 for dirs
      dirs,¨←'/'                               ⍝ give the dirs trailing slashes
      list←dirs⍪files                          ⍝ we need to process dirs before files
@@ -61,11 +61,11 @@
      Nss←,\'.',¨1↓Parts                       ⍝ Convert file path to ns path
      DotSlash←'.'@Slash                       ⍝ Convert dots to slashes
 
-     :If ~opts.flatten                                   ⍝ If we are not flattening, create nss
+     :If ~opts.flatten                        ⍝ If we are not flattening, create nss
          nss←DotSlash¨paths                   ⍝ all necessary namespaces
-         nss←(¯1≠⎕NC nss)/nss                 ⍝ ignore invalid names
-         NsExpr←{'''',⍵,'''⎕NS⍬'}               ⍝ Expression to create namespace
-         target.⍎∘NsExpr¨(~opts.flatten)/nss       ⍝ create namespaces in target
+         nss/⍨←(¯1=⎕NC nss)⍱('.'∊¨nss)        ⍝ keep only names that are neither invalid nor compound
+         NsExpr←{'''',⍵,'''⎕NS⍬'}             ⍝ Expression to create namespace
+         target.⍎∘NsExpr¨(~opts.flatten)/nss  ⍝ create namespaces in target
      :EndIf
 
      PadThis←{⍵,'⎕THIS'/⍨0=≢⍵}                   ⍝ Default path to here
@@ -84,9 +84,9 @@
 
      inFail←0~⍨target∘TryFixThere¨Files list ⍝ try it and return only failures
       ⍝ return (list of failures) and (watcher reference or zilde)
-     :If 'dir' 'both'∊⍨opts.watch
-         fsw←##.FileSystemWatcher.Watch(¯1↓source)(,'*')
+     :If 'dir' 'both'∊⍨⊂opts.watch
+         fsw←FileSystemWatcher.Watch(¯1↓source)(,'*')
      :Else
-         fws←⍬
+         fsw←⍬
      :EndIf
  :EndIf

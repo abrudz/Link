@@ -1,8 +1,4 @@
- msg←{opts}Create(ns dir);Default;isWin;container;z;links;Qt;doNs;doDir;fsw;ix;linkDef;outFail;inFail
-
- msg←⍕⍬⊤⍬
- ns←⍕ns
- DefaultOpts'opts'⎕NS ⍬
+ msg←{opts}Create(ns dir);Default;isWin;container;z;links;Qt;fsw;ix;linkDef;outFail;inFail;nsref;win
 
  '⎕SE.Link'⎕NS ⍬
  :If 0=⎕NC'⎕SE.Link.Links'    ⍝ Check existence of our data structure
@@ -11,72 +7,55 @@
  ⍝    and also contain fsw, the FileSystemWatcher object
  :EndIf
 
- isWin←'Windows'≡7↑⊃'.'⎕WG'APLVersion'
- :If ~isWin
+ msg←⍕⍬⊤⍬
+ opts←DefaultOpts'opts'⎕NS ⍬
+ container←⊃⌽2⍴⎕RSI    ⍝ ns is relative to where we were called from
+ ns←(⍕container),'.'(⍕ns)
+
+ dir←∊1 ⎕NPARTS⊃⊃⎕NINFO⍠1⊢dir ⍝ normalise name
+
+ win←'Windows'≡7↑⊃'.'⎕WG'APLVersion'
+ dir←'/'@{⍵='/'}⍣win⊢dir
+ :If ~win
  :AndIf (⊂opts.watch)∊'both' 'dir'
      msg←'Watching directories is only supported under Microsoft Windows'
+ :ElseIf ((⊂ns)∊'⎕SE'(,'#')'⎕DMX')⍱0 9.1∊⍨container.⎕NC⊂,ns ⍝ must be normal namespace
+     msg←'Scripted: ',ns
+ :ElseIf ×≢⎕SE.Link.Links⊣nsref←⍎ns container.⎕NS ⍬
+ :AndIf nsref∊⍎¨⎕SE.Link.Links.ns
+     msg←'A link already exists for: ',⍕ns
+ :ElseIf {16::0 ⋄ 1⊣⎕SRC ⍵}nsref
+     msg←'Unavailable: ',ns
+ :ElseIf ~⎕NEXISTS dir←∊1 ⎕NPARTS dir
+ :AndIf ~3 ⎕MKDIR dir
+     msg←'Directory not found: ',dir
+ :ElseIf 0≡opts.source
+ :AndIf ∧/0≠(≢nsref.⎕NL-⍳10),≢⊃(⎕NINFO⍠1)dir,'/*'
+     msg←'Source must be specified when linking a non-empty namespace to a non-empty directory'
+ :ElseIf opts.(flatten∧source≢'dir')
+     msg←'flatten≡1 requires source≡''dir'''
  :Else
-     container←⊃⌽2⍴⎕RSI    ⍝ ns is relative to where we were called from
-     :If (ns≡,'#')⍱9.1=container.⎕NC⊂,ns ⍝ must be normal namespace
-         msg←ns,' is not a namespace'
-     :Else
-         ns←container⍎ns
-         :Trap 0
-             z←(⊂'#.')~⍨{((⍸⍵='.')↑¨⊂⍵),⊂⍵}ns
-             z←(0=container.⎕NC z)/z
-             z container.⎕NS¨⊂''
-             ns←container⍎ns
-         :Else
-             ns←0
-         :EndTrap
-         :If 0≡ns
-             msg←'Unable to create: ',⍕ns
-         :Else
-             links←⎕SE.Link.Links
-             :If 0<≢l
-             :AndIf (⊂ns)∊⍎¨links.ns
-                 msg←'A link already exists for: ',⍕ns
-             :Else
-                 :If ~⎕NEXISTS dir←U.Normalise 2⊃Input.Arguments
-                 :AndIf ~3 ⎕MKDIR dir
-                     msg←'Directory not found: ',dir
-                 :Else
-                     :If 0≡opts.source
-                     :AndIf ∧/0≠(≢ns.⎕NL-⍳10),≢⊃(⎕NINFO⍠1)dir,'/*'
-                         msg←'Source must be specified when linking a non-empty namespace to a non-empty directory'
-                     :Else
-                         :If opts.(flatten∧source≢'dir')
-                             msg←'flatten≡1 requires source≡''dir'''
-                         :Else
-                             doNs←'ns' 'both'
-                             doDir←'dir' 'both'
-                             msg←⊂(⍕ns),' linked to ',dir
-                             inFail←outFail←fsw←⍬
-                             ix←'[',(⍕1+≢links),']'
 
-                             :If opts.source∊doNs
-                                 :If 0≠≢outFail←opts Export ns dir
-                                     msg,←('Failed to export ',(⍕≢outFail),' file(s) - see:')('      ⎕SE.Link.Links',ix,'.outFail')
-                                 :EndIf
-                             :EndIf
+  ⍝ We're all good; do it!
+     msg←ns,' linked to ',dir
+     inFail←outFail←fsw←⍬
+     ix←'[',(⍕1+≢⎕SE.Link.Links),']'
 
-                             :If opts.source∊doDir
-                                 (inFail fsw)←opts Import ns dir
-                                 :If 0≠≢inFail
-                                     msg,←('Failed to import ',(⍕≢inFail),' file(s) - see:')('      ⎕SE.Link.Links',ix,'.inFail')
-                                 :EndIf
-                             :EndIf
-
-                             linkDef←⎕SE.⎕NS opts
-                             linkDef.⎕DF'[',ns,' ',('' '→' '←' '←→'⊃⍨'none' 'ns' 'dir' 'both'⍳⊂opts.watch),' ',(∊1 ⎕NPARTS dir),']' ⍝ '[Link]'
-                             ns←⍕ns
-                             'linkDef'⎕NS'ns' 'dir' 'inFail' 'outFail'
-                             ⎕SE.Link.Links,←linkDef
-                             r←↑r
-                         :EndIf
-                     :EndIf
-                 :EndIf
-             :EndIf
-         :EndIf
+     :If 'ns' 'both'∊⍨⊂opts.source
+         outFail←opts WriteFiles nsref dir
+     :AndIf 0≠≢outFail
+         msg,←'; ',(⍕≢outFail),' export(s) failed (⎕SE.Link.Links',ix,'.outFail)'
      :EndIf
+
+     :If 'dir' 'both'∊⍨⊂opts.source
+         (inFail fsw)←opts FixFiles nsref dir
+     :AndIf 0≠≢inFail
+         msg,←'; ',(⍕≢inFail),' imports failed (⎕SE.Link.Links',ix,'.inFail)'
+     :EndIf
+
+     linkDef←⎕SE.⎕NS opts
+     linkDef.⎕DF'[',ns,' ',('←→'/⍨2 2⊤'dir' 'ns' 'both'⍳⊂opts.watch),' ',(∊1 ⎕NPARTS dir),']' ⍝ '[Link]'
+     'linkDef'⎕NS'ns' 'dir' 'inFail' 'outFail'
+     ⎕SE.Link.Links,←linkDef
+     msg←↑msg
  :EndIf

@@ -1,9 +1,10 @@
- msg←Break nss;ns;linked;broken;missing;mask;⎕IO
+ msg←Break nss;ns;linked;broken;missing;mask;⎕IO;there
  ⎕IO←1
- :If 2<10|⎕DR ns
-     ns←(⊃⌽2⍴⎕RSI){⍺⍎⍣(''≡0⍴⍵)⊢⍵}¨ns
+ there←⊃⌽2⍴⎕RSI
+ :If 2<10|⎕DR nss
+     nss←there{⍺⍎⍣(''≡0⍴⍵)⊢⍵}¨nss
  :Else
-     ns←⍎ns
+     nss←there⍎nss
  :EndIf
  linked←⍎¨⎕SE.Link.Links.ns
  broken←0⍴⊂''
@@ -11,10 +12,9 @@
  :For ns :In nss
      mask←linked≠ns
      :If 0∊mask
-         ⎕SE.Link.Links.ns/⍨←mask
+         ⎕SE.Link.Links/⍨←mask
          broken,←⊂ns
      :Else
-         ⎕SE.Link.Links.ns/⍨←ns{~(⍳≢⍵)∊⍵⍳⍺}
          missing,←⊂ns
      :EndIf
  :EndFor

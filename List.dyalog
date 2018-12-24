@@ -9,11 +9,18 @@
      r[i]←r[i](⍺⍺[i].## ∇∇)⍵  ⍝ try parents
      r
  }
- :If ×≢⎕SE.Link.Links
+ :If ×⎕NC'⎕SE.Link.Links'
+ :AndIf ×≢⎕SE.Link.Links
      nss←2⊃¨5177⌶⍬
      count←{+/nss within⍎⍵}¨⎕SE.Link.Links.ns
-     list←'Namespace' 'Directory' 'Names'
-     list⍪←⎕SE.Link.Links.(↑ns dir),count
+
+     list←⎕SE.Link.Links.(↑ns dir),count
+     :If ×≢ns
+         ns←⍕(⊃⌽2⍴⎕NSI)⍎⍣(2=⎕NC'ns')⊢ns
+         nss←⍕¨⎕SE.Links.Links.ns
+         list⌿⍨←ns(⊃⍷)¨nss
+     :EndIf
+     list⍪⍨←'Namespace' 'Directory' 'Names'
  :Else
      list←'No active links'
  :EndIf

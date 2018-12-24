@@ -2,7 +2,8 @@
 ⍝ Notify Link system that an external file has changed
 ⍝ Usually called by FileSystemWatcher
 
- :If DEBUG>0
+ :If ×⎕NC'DEBUG'
+ :AndIf DEBUG>0
      ⎕←args
  :AndIf DEBUG>1
      ⎕TRAP←0 'S' ⋄ ∘∘∘
