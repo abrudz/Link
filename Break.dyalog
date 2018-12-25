@@ -2,7 +2,11 @@
  ⎕IO←1
  there←⊃⌽2⍴⎕RSI
  :If 2<10|⎕DR nss
-     nss←there{⍺⍎⍣(''≡0⍴⍵)⊢⍵}¨nss
+     nss←there{
+         ''≢0⍴⍵:⍵
+         9≠⍺.⎕NC ⍵::⍵
+         ⍺⍎⍵
+     }¨nss
  :Else
      nss←there⍎nss
  :EndIf
@@ -25,4 +29,4 @@
  :If ×≢missing
      msg,←⊂'Not found:',∊' ',¨missing
  :EndIf
- msg←↑msg
+ msg←⊃{⍺,'; ',⍵}/msg
