@@ -7,7 +7,8 @@
 ⍝ Returns 1 if a link was found for the name, else 0
 ⍝   NB: if 0 is returned, no ⎕FX/⎕FIX was done
 
- :If DEBUG=2
+ :If ×⎕NC'DEBUG'
+ :AndIf DEBUG=2
      ⎕TRAP←0 'S' ⋄ ∘∘∘
  :EndIf
 
@@ -24,7 +25,7 @@
          :If ~linked←z∊nss
              linked←(z←z.##)∊nss
          :EndIf
-     :Until linked∨z∊# ⎕SE
+     :Until linked∨z∊# ⎕SE ⎕DMX
      :If linked
          link←(nss⍳z)⊃⎕SE.Link.Links
      :EndIf
