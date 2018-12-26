@@ -1,14 +1,15 @@
- {r}←Expunge name;caller;src
+ {r}←Expunge names
 ⍝ Use in place of ⎕EX for linked names - will expunge source files where relevant
 
- :If DEBUG=2
-     ⎕TRAP←0 'S' ⋄ ∘∘∘
+ :If ×⎕NC'DEBUG'
+ :AndIf DEBUG=2
+     (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
 
- caller←⊃⎕RSI
- src←Utils.GetLinkInfo caller name
- r←caller.⎕EX name
+ r←(⊃⎕RSI){
+     src←Utils.GetLinkInfo caller ⍵
+     r←⍺.⎕EX name
 
- :If (0≢4⊃src)∧0=≢4⊃Utils.GetLinkInfo caller name ⍝ There was source and now there is none
-     ⎕NDELETE 4⊃src
- :EndIf
+     del←(0≢4⊃src)∧0=≢4⊃Utils.GetLinkInfo ⍺ ⍵ ⍝ There was source and now there is none
+     r⊣⎕NDELETE⍣del⊢4⊃src
+ }¨⊆names
