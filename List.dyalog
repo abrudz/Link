@@ -12,7 +12,7 @@
      :EndIf
      lineages←{⍕¨{∪(⊃⍵).##,⍵}⍣≡2⊃⍵}¨5177⌶⍬
      list,←+/lineages∘.∊⍨⊂¨⊣/list
-     list⍪⍨←'Namespace' 'Directory' 'Names'
+     list⍪⍨←'Namespace' 'Directory' 'Scripts'
  :Else
      list←'No active links'
  :EndIf

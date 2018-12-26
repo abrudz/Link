@@ -5,5 +5,5 @@
  filelist←{∊1 ⎕NPARTS 3⊃⍵}¨table
  itemlist←(2↑¨table),⊂'' ''
  items←itemlist[filelist⍳files]
- items←{(⍕1⊃⍵),'.',⊃⍵}¨items
+ items←{(⍕1⊃⍵),(×≢⊃⍵)/'.',⊃⍵}¨items
  items←⊃⍣(1≥≡file)⊢items
