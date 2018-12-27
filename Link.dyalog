@@ -19,17 +19,23 @@
       r/⍨←×⎕NC'⎕SE.Link'
     ∇
 
-    ∇ Û←Run(Ûcmd Ûargs);Ûriu
+    ∇ r←Run(cmd args);opts;name;lc;names;L;ârgs;ôpts
+      L←819⌶
+      ⍝ propagate lowercase modifiers to dromedaryCase options' namespace members
+      'opts'⎕NS ⍬
+      names←'watch' 'beforeRead' 'beforeWrite' 'caseCode' 'codeExtensions' 'extension' 'flatten' 'forceExtensions' 'forceFileNames' 'source' 'typeExtensions'
+      :For name :In names
+          lc←L name
+          :If ×args.⎕NC lc
+          :AndIf 0≢args⍎lc
+              name opts.{⍎⍺,'←⍵'}##.THIS⍎⍣(∨/'Extensions'⍷name)⍎'args.',lc
+          :EndIf
+      :EndFor
+      ôpts←,opts ⋄ ârgs←args.Arguments
      ⍝ Simulate calling directly from the original ns
-      Ûriu←{6::0 ⋄ ##.RIU}0
-     ⍝ We can't use :With because if a space is returned
-     ⍝ as result it will be lost in :endwith
-      Ûargs.('opts'⎕NS ⎕NL 2)
-      :If 0≢Ûargs.opts.typeextensions
-          Ûargs.opts.typeextensions⍎⍨←##.THIS
-      :EndIf
-      ⎕CS ##.THIS  ⍝ We know THIS has been set for us
-      Û←Ûargs.opts(⎕SE.Link⍎Ûcmd)Ûargs.Arguments ⍝ Û vars for Snap
+      :With ##.THIS  ⍝ We know THIS has been set for us
+          r←(⊃ôpts)(⎕SE.Link⍎cmd)ârgs
+      :EndWith
     ∇
 
     ∇ r←level Help cmd;args;list;info;Means
