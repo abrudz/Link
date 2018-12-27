@@ -7,7 +7,7 @@
       r,←'{"Name":"Add",         "args":"item",   "Parse":"1 -extension=", "Desc":"Add item to linked namespace"},'
       r,←'{"Name":"Break",       "args":"ns",     "Parse":"1",  "Desc":"Stop namespace from being linked"},'
       r,←'{"Name":"CaseCode",    "args":"file",   "Parse":"1L", "Desc":"Add case code to file name"},'
-      r,←'{"Name":"Create",      "args":"ns dir", "Parse":"2L -source=ns dir both -watch=none ns dir both -flatten -casecode -forceextensions -forcefilenames -beforeread= -beforewrite= -typeextensions=","Desc":"Link a namespace to a directory"},'
+      r,←'{"Name":"Create",      "args":"ns dir", "Parse":"2L -source=ns dir both -watch=none ns dir both -flatten -casecode -codeextensions -forceextensions -forcefilenames -beforeread= -beforewrite= -typeextensions=","Desc":"Link a namespace to a directory"},'
       r,←'{"Name":"Export",      "args":"ns dir", "Parse":"2L", "Desc":"One-off save"},'
       r,←'{"Name":"GetFileName", "args":"item",   "Parse":"1",  "Desc":"Get name of file linked to item"},'
       r,←'{"Name":"GetItemName", "args":"file",   "Parse":"1L",  "Desc":"Get name of item linked to file"},'
@@ -18,25 +18,51 @@
       r.Group←⊂'Link'
       r/⍨←×⎕NC'⎕SE.Link'
     ∇
+
     ∇ Û←Run(Ûcmd Ûargs);Ûriu
      ⍝ Simulate calling directly from the original ns
       Ûriu←{6::0 ⋄ ##.RIU}0
      ⍝ We can't use :With because if a space is returned
      ⍝ as result it will be lost in :endwith
       Ûargs.('opts'⎕NS ⎕NL 2)
+      :If 0≢Ûargs.opts.typeextensions
+          Ûargs.opts.typeextensions⍎⍨←##.THIS
+      :EndIf
       ⎕CS ##.THIS  ⍝ We know THIS has been set for us
       Û←Ûargs.opts(⎕SE.Link⍎Ûcmd)Ûargs.Arguments ⍝ Û vars for Snap
     ∇
+
     ∇ r←level Help cmd;args;list;info;Means
       list←List
       info←list⊃⍨list.Name⍳⊢/'.'(≠⊆⊢)cmd
+      Means←{
+          term←⍺~' '
+          has←∨/term⍷info⍎'args' 'Parse'⊃⍨1+'-'∊⍺
+          has/,/'  '∘,¨⍺ ⍵
+      }
       r←⊂info.Desc
       r,←⊂']LINK.',cmd,' ',info.args
-      Means←info.args{(∨/⍺⍺⍷⍨⍺~' ')/⊂'  ',⍺,'  ',⍵}
-      r,←'ns  'Means'target namespace of link'
-      r,←'dir 'Means'target directory of link'
-      r,←'file'Means'filename where item source is stored'
-      r,←'item'Means'name of APL item to process'
-      r,←⊂'See https://github.com/abrudz/Link/wiki/Link.',cmd,' for full details'
+      :If 0=level
+          r,←⊂']Link.',cmd,' -??  ⍝ for argument and modifier details'
+      :Else
+          r,←⊂''
+          r,←'ns  'Means'target namespace of link'
+          r,←'dir 'Means'target directory of link'
+          r,←'file'Means'filename where item source is stored'
+          r,←'item'Means'name of APL item to process'
+          r,←⊂''
+          r,←'-beforeread     'Means'name of function to call before reading a file'
+          r,←'-beforewrite    'Means'name of function to call before writing a file'
+          r,←'-casecode       'Means'add octal suffixes to preserve capitalisation on systems that ignore case'
+          r,←'-codeextensions 'Means'name of vector of file extensions to be considered code'
+          r,←'-extension      'Means'file extension of created file if different from default for the name class'
+          r,←'-flatten        'Means'merge items from all subdirectories into target directory'
+          r,←'-forceextensions'Means'rename existing files so they adhere to the type specific file extensions'
+          r,←'-forcefilenames 'Means'rename existing files so their names match their contents'
+          r,←'-source         'Means'which source is authoritative ("ns" or "dir" or "both") if both are populated'
+          r,←'-typeextensions 'Means'name of two-column matrix with name classes and extensions'
+          r,←⊂''
+      :EndIf
+      r,←⊂'See https://github.com/abrudz/Link/wiki/Link.',cmd,' for full documentation'
     ∇
 :EndNamespace
