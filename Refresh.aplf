@@ -1,10 +1,21 @@
- {count}←Refresh ns
+ msg←Refresh ns;container;nsref;nsrefs;outFail;inFail;link
  :If ~×⎕NC'⎕SE.Link.DEBUG'
      ⎕SE.Link.DEBUG←0
  :ElseIf ⎕SE.Link.DEBUG=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
  :Trap ⎕SE.Link.DEBUG↓0
+
+     container←⊃⌽2⍴⎕RSI
+     nsref←container⍎⍕ns
+     :If nsref∊nsrefs←⍎¨⎕SE.Link.Links.ns
+         link←⎕SE.Link.Links⊃⍨nsrefs⍳nsref
+         {}Break nsref
+         DefaultOpts
+         msg←link Create nsref link.dir
+     :Else
+         msg←'Not linked: ',⍕ns
+     :EndIf
  :Else
-     ⎕SIGNAL⊂⎕DMX.(('EM'EM)('Message'Message))
- :endtrap
+     ⎕SIGNAL⊂⎕DMX.(('EN'EN)('Message'Message))
+ :EndTrap

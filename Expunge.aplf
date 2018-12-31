@@ -1,14 +1,22 @@
- {r}←Expunge names
+ {r}←Expunge names;container;refs;UnscriptedNs
 ⍝ Use in place of ⎕EX for linked names - will expunge source files where relevant
 
  :If ×⎕NC'DEBUG'
  :AndIf DEBUG=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
+ container←⊃2⍴⎕RSI
+ UnscriptedNs←container.{
+     9.1≠⎕NC ⍵:0
+     11::0
+     1⊣⎕SRC⍎⍵
+ }
 
- r←(⊃⎕RSI){
-     src←Utils.GetLinkInfo caller ⍵
-     r←⍺.⎕EX name
+ refs←⍎¨Links.ns
+ r←container{
+     UnscriptedNs ⍵:⍺.⎕EX ⍵⊣Links/⍨←refs≠⍎⍺.⍵
+     src←Utils.GetLinkInfo ⍺ ⍵
+     r←⍺.⎕EX ⍵
 
      del←(0≢4⊃src)∧0=≢4⊃Utils.GetLinkInfo ⍺ ⍵ ⍝ There was source and now there is none
      r⊣⎕NDELETE⍣del⊢4⊃src

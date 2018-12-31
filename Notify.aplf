@@ -249,5 +249,5 @@
          :EndIf
      :EndIf
  :Else
-     ⎕SIGNAL⊂⎕DMX.(('EM'EM)('Message'Message))
+     ⎕SIGNAL⊂⎕DMX.(('EN'EN)('Message'Message))
  :EndTrap
