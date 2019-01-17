@@ -5,7 +5,7 @@
  :AndIf DEBUG=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
- container←⊃2⍴⎕RSI
+ container←⊃⌽2⍴⎕RSI↓⍨⎕XSI(∊⍨×¯1+⍳)⊂'⎕SE.UCMD'
  UnscriptedNs←container.{
      9.1≠⎕NC ⍵:0
      11::0

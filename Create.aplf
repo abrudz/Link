@@ -16,7 +16,7 @@
 
      msg←⍕⍬⊤⍬
      opts←DefaultOpts'opts'⎕NS ⍬
-     container←⊃⌽2⍴⎕RSI    ⍝ ns is relative to where we were called from
+     container←⊃⌽2⍴⎕RSI↓⍨⎕XSI(∊⍨×¯1+⍳)⊂'⎕SE.UCMD'    ⍝ ns is relative to where we were called from
      ns←⍕ns
      isChild←~'⎕SE'(,'#')'⎕DMX'∊⍨⊂ns
      ns,⍨←isChild/'.',⍨⍕container

@@ -6,7 +6,7 @@
  :EndIf
  :Trap ⎕SE.Link.DEBUG↓0
 
-     container←⊃⌽2⍴⎕RSI
+     container←⊃⌽2⍴⎕RSI↓⍨⎕XSI(∊⍨×¯1+⍳)⊂'⎕SE.UCMD'
      nsref←container⍎⍕ns
      :If nsref∊nsrefs←⍎¨⎕SE.Link.Links.ns
          link←⎕SE.Link.Links⊃⍨nsrefs⍳nsref
