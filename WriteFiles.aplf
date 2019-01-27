@@ -16,7 +16,7 @@
          ⍺←'/'
          (types exts)←↓{⍵,⌊@1⊢⍵}⍉opts.typeExtensions
          tail←(types⍳⍺)⊃'/',⍨'.',¨exts
-         '/'@{'.'=⍵}dir,⍵,tail  ⍝ append appropriate tail and convert / to .
+         tail,⍨'/'@{'.'=⍵}dir,⍵  ⍝ append appropriate tail and convert / to .
      }
      Into←{ ⍝ Put vtv into file
          22::⍵                  ⍝ no file access

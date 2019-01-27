@@ -20,11 +20,15 @@
      ns←⍕ns
      isChild←~'⎕SE'(,'#')'⎕DMX'∊⍨⊂ns
      ns,⍨←isChild/'.',⍨⍕container
-
-     dir←∊1 ⎕NPARTS⊃⊃⎕NINFO⍠1⊢dir ⍝ normalise name
+     dir↓⍨←-'/\'∊⍨⊃⌽dir
+     :If ⎕NEXISTS dir
+         dir←⊃⊃⎕NINFO⍠1⊢dir
+     :Else
+         dir←∊1 ⎕NPARTS dir ⍝ normalise name
+     :EndIf
 
      win←'Windows'≡7↑⊃'.'⎕WG'APLVersion'
-     OsSlash←'/'@{⍵='/'}⍣win
+     OsSlash←'\'@{⍵='/'}⍣win
      dir←OsSlash dir
 
      Arrow←{
