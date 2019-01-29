@@ -1,5 +1,4 @@
  {x}←Log x
- :If ×⎕NC'⎕SE.Link.DEBUG'
- :AndIf ⎕SE.Link.DEBUG≠0
+ :If U.debug≠0
      ⎕←x
  :EndIf

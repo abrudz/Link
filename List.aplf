@@ -1,10 +1,9 @@
- list←List ns;nss;lineages;there;ref
- :If ~×⎕NC'⎕SE.Link.DEBUG'
-     ⎕SE.Link.DEBUG←0
- :ElseIf ⎕SE.Link.DEBUG=2
+ list←List ns
+ ;nss;lineages;there;ref
+ :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
- :Trap ⎕SE.Link.DEBUG↓0
+ :Trap DEBUG↓0
      :If ×⎕NC'⎕SE.Link.Links'
      :AndIf ×≢⎕SE.Link.Links
          list←↑⎕SE.Link.Links.(ns dir)
@@ -23,5 +22,5 @@
          list←'No active links'
      :EndIf
  :Else
-     ⎕SIGNAL⊂⎕DMX.(('EN'EN)('Message'Message))
+     U.Resignal 1
  :EndTrap

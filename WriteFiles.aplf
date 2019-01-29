@@ -1,11 +1,10 @@
- outFail←{opts}WriteFiles(source dir);nc;okFn;okNs ⍝ Write items to file in folders
- ;Enclose;Path;Into;AbsSaveFn;nss;No0;SaveFn;OnEach;SaveNs;unscripted;failed;paths;ok;fns
- :If ~×⎕NC'⎕SE.Link.DEBUG'
-     ⎕SE.Link.DEBUG←0
- :ElseIf ⎕SE.Link.DEBUG=2
+ outFail←{opts}WriteFiles(source dir)
+ ⍝ Write items to file in folders
+ ;nc;okFn;okNs;Enclose;Path;Into;AbsSaveFn;nss;No0;SaveFn;OnEach;SaveNs;unscripted;failed;paths;ok;fns
+ :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
- :Trap ⎕SE.Link.DEBUG↓0
+ :Trap DEBUG↓0
 
      opts←DefaultOpts'opts'⎕NS ⍬
 
@@ -28,7 +27,8 @@
          nc←⊃source.⎕NC ⍵
          nr Into nc Path ⍵↑⍨1-'.'⍳⍨⌽⍵ ⍝ Item name without ns path
      }
-     nc←⎕NC⊂,⍕source
+
+     nc←{⎕NC⊂,'⍵'}source
      okFn←3.1 3.2 4.1 4.2 ⍝ tradfn/dfn/tradop/dop
      okNs←9.1 9.4 9.5 ⍝ ns/class/interface
      :If nc=0 ⍝ undef
@@ -71,6 +71,6 @@
      :Else ⍝ invalid type
          outFail←,⊂source
      :EndIf
-:Else
-     ⎕SIGNAL⊂⎕DMX.(('EN'EN)('Message'Message))
-  :EndTrap
+ :Else
+     U.Resignal 1
+ :EndTrap

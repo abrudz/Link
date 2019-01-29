@@ -1,11 +1,9 @@
  (inFail fsw)←{opts}FixFiles(target source);⎕IO ⍝ Load items from files in folders
  ;Slash;cands;candLengths;name;File;d;f;e;list;Where;Begins;hideBit;hidden;RightExtn;Files;files;dirs;order;Path;RemDir;paths;Nss;DotSlash;nss;NsExpr;PadThis;Target;Parts
- :If ~×⎕NC'⎕SE.Link.DEBUG'
-     ⎕SE.Link.DEBUG←0
- :ElseIf ⎕SE.Link.DEBUG=2
+ :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
- :Trap ⎕SE.Link.DEBUG↓0
+ :Trap DEBUG↓0
      ⎕IO←1
      opts←DefaultOpts'opts'⎕NS ⍬
 
@@ -102,5 +100,5 @@
          :EndIf
      :EndIf
  :Else
-     ⎕SIGNAL⊂⎕DMX.(('EN'EN)('Message'Message))
+     U.Resignal 1
  :EndTrap

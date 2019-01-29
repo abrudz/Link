@@ -7,10 +7,10 @@
 ⍝ Returns 1 if a link was found for the name, else 0
 ⍝   NB: if 0 is returned, no ⎕FX/⎕FIX was done
 
- :If ×⎕NC'DEBUG'
- :AndIf DEBUG=2
-     ⎕TRAP←0 'S' ⋄ ∘∘∘
+ :If U.debug=2
+     (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
+ :Trap DEBUG↓0
 
  nosrc←0=≢src
  (ns name oldname)←3↑where,⊂''
@@ -33,7 +33,7 @@
  :EndIf
 
  :If linked
-     :If 0<≢file←4⊃Utils.GetLinkInfo ns name ⍝ Already saved in a file
+     :If 0<≢file←4⊃U.GetLinkInfo ns name ⍝ Already saved in a file
      :AndIf name≡oldname                  ⍝ Function not renamed
               ⍝ Interpreter will do everything needed here
      :ElseIf ~link.flatten                ⍝ Not flattened
@@ -87,8 +87,7 @@
          (⊂src)⎕NPUT file 1
      :Else
          old←0
-         ⎕←'Fix: Unable to write "',name,'" to file ',file
-         ⎕TRAP←0 'S' ⋄ ∘∘∘
+         ⎕←'*** Fix: Unable to write "',name,'" to file ',file
          ⎕←'     '⎕DMX
      :EndTrap
      :If fsw ⋄ link.fsw.Object.EnableRaisingEvents←old ⋄ :EndIf
@@ -96,8 +95,10 @@
      :Trap 0
          2 ns.⎕FIX'file://',file
      :Else
-         ⎕←'Fix: Unable to re-fix "',name,'" from file ',file
-         ⎕TRAP←0 'S' ⋄ ∘∘∘
+         ⎕←'*** Fix: Unable to re-fix "',name,'" from file ',file
          ⎕←'     '⎕DMX
      :EndTrap
  :EndIf
+ :Else
+     U.Resignal 1
+ :EndTrap
