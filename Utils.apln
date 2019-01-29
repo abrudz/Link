@@ -1,20 +1,72 @@
 ﻿:Namespace Utils
     ⍝ Utilities shared by Link infrastructure
+    :Section Constants
     ##.U←⎕THIS ⍝ shortcut
-    Normalise←{∊1⎕NPARTS ⍵}
     isWindows←'Win'≡3↑⊃# ⎕WG'APLVersion'
-    ∇ r←IsWindows
-      r←isWindows
-    ∇
+    :EndSection
+
+    Normalise←{∊1⎕NPARTS ⍵}
     Strip←{⍵↓⍨-'/'⍳⍨⌽⍵}
-    Shortest←{⍵⊃⍨(⊢⍳⌊/)≢¨⍵}
-    WinSlash←'\'@(=∘'/')⍣isWindows
+    Shortest←{⍵⊃⍨{⍵⍳⌊/⍵}≢¨⍵}
+    Slash←{⍵∊'/\'}                          ⍝ Mark slashes
+    Parts←{⍵⊆⍨~Slash ⍵}                     ⍝ Path parts
+    Path←{⍵↓⍨-'/'⍳⍨⌽⍵}                      ⍝ Until last slash
+    PadThis←{⍵,'⎕THIS'/⍨0=≢⍵}               ⍝ Default path to here
+    NsExpr←{'''',⍵,'''⎕NS⍬'}                ⍝ Expression to create namespace
+    Where←{⍵⌿⍺}                             ⍝ Filter as function
+    Begins←{⊃⍺⍷⍵}                           ⍝ ⍵ starts with ⍺
+    WinSlash←'\'@Slash⍣isWindows
+    DotSlash←'.'@Slash                      ⍝ Convert dots to slashes
+    Nss←{,\'.',¨1↓U.Parts ⍵}                ⍝ Convert file path to ns path
     Combine←{(⍕⍺),⍨(326≠⎕DR ⍺)/'.',⍨⍕⍵}/
-    IsDir←{22::0 ⋄ 1=1 ⎕NINFO ⍵}
-    IsChild←~'⎕SE'(,'#')'⎕DMX'∊⍨⊂
-    lc←819⌶ ⍝ Lowercase
+    IsChild←(⍕¨# ⎕SE ⎕DMX)∘{~⍺∊⍨⊂⍵}
     GetCheckSum←{2 ⎕NQ #'GetBuildID' ⍵}
+    List←{∊{' ',⍕⍵}¨⍵}
+    No0←{⍵~0}                               ⍝ Remove fills
+    _←{⍺ ⍵}
+
+    :Section Tacit necessary to avoid stack frame
     Resignal←⎕SIGNAL{⍺←'' ⋄ ⍵/⊂⎕DMX.(('EN'EN)('Message'(Message,⍺)))}
+    Check←→0⍴⍨¯1∊∘⎕NC'/'∘≠⊆⊢ ⍝ leave early if any bad name (yes, it should say "←→")
+    :EndSection
+
+      Arrow←{
+          lr←'←→'/⍨2 2⊤'dir' 'ns' 'both'⍳⊂⍵.watch
+          ⍵.ns,' ',lr,' ',WinSlash ⍵.dir
+      }
+
+      Into←{ ⍝ Put vtv into file
+          22::⍵                  ⍝ no file access
+          _←3 ⎕MKDIR⊃1 ⎕NPARTS ⍵ ⍝ create dir if needed
+          0⊣⍵ 1 ⎕NPUT⍨⊂⍺         ⍝ overwrite
+      }
+
+      OnEach←{ ⍝ ¨ without prototype call on empty
+          0∊⍴⍵:⍬ ⍝ if empty return empty
+          ⍺←⊢      ⍝ ambivalent
+          ⍺ ⍺⍺¨⍵ ⍝ call
+      }
+
+      ContainerNs←{(rsi xsi)←⍺ ⋄ ns←⍵
+          326=⎕DR ns:# _⍕ns
+          Norm←{ns←⍕⍵ ⋄ 9∊⎕NC ns:⍕⍎ns ⋄ ns}
+          '#⎕'∊⍨⊃ns:# _ Norm ns⊣' *** Invalid target'Resignal ¯1∊⎕NC ns
+          container←⊃⌽2⍴rsi↓⍨xsi{(⍵∊⍺)×¯1+⍺⍳⍵}⊂'⎕SE.UCMD'
+          container _ Norm container,'.',ns
+      }
+
+      IsDir←{
+          22::0
+          1=1 ⎕NINFO ⍵
+      }
+
+    ∇ d←debug
+      :If 0=⎕NC'##.DEBUG'
+          d←##.DEBUG←0
+      :Else
+          d←##.DEBUG
+      :EndIf
+    ∇
     ∇ r←GetName file;code;ns
     ⍝ Attempt to determine the name which will be defined by a file
      
@@ -34,40 +86,24 @@
     ⍝ Return links to file
       r←5174⌶file
     ∇
-    ∇ r←GetRefTo nsname;name
+    ∇ r←GetRefTo nsname;name;nc
      ⍝ Get a reference to a container namespace (or ⍬ if that is not possible)
-     
-      :If ~(⊂nsname)∊'⎕SE'(,'#')
-          r←⍬ ⍝ pessimism in action
-          →(¯1=⎕NC nsname)⍴0 ⍝ Not a valid name, not worth trying
-     
-          :If ~(nsname≡,'#')∨9=⎕NC nsname ⍝ if it isn't already there
-              :Trap 0
-                  :For name :In (¯1+⍸'.'=nsname,'.')↑¨nsname ⍝ growing paths
-                      :If 9.1≠⎕NC⊂name ⍝ Not a namespace
-                          name ⎕NS''
-                      :EndIf
-                  :EndFor
-              :Else
-                  →0
-              :EndTrap
-          :EndIf
-      :EndIf
-      r←⍎nsname
-    ∇
-      ContainerNs←{(rsi xsi)←⍺ ⋄ ns←⍵
-          326=⎕DR ns:#(⍕ns)
-          Norm←{ns←⍕⍵ ⋄ 9∊⎕NC ns:⍕⍎ns ⋄ ns}
-          '#⎕'∊⍨⊃ns:#(Norm ns)⊣' *** Invalid target' Resignal ¯1∊⎕NC ns
-          container←⊃⌽2⍴rsi↓⍨xsi{(⍵∊⍺)×¯1+⍺⍳⍵}⊂'⎕SE.UCMD'
-          container(Norm container,'.',ns)
-      }
-
-    ∇ d←debug
-      :If 0=⎕NC'##.DEBUG'
-          d←##.DEBUG←0
+      nc←⎕NC⊂name
+      :If 9=⌊nc      ⍝ if it is already there
+      :OrIf ~IsChild nsname ⍝ or a root
+          r←⍎nsname
+      :ElseIf ¯1=nc ⍝ Not a valid name, not worth trying
+          r←⍬
       :Else
-          d←##.DEBUG
+          :Trap 0
+              :For name :In (¯1+⍸'.'=nsname,'.')↑¨nsname ⍝ growing paths
+                  :If 9.1≠nc ⍝ Not a namespace
+                      name ⎕NS''
+                  :EndIf
+              :EndFor
+          :Else
+              r←⍬
+          :EndTrap
       :EndIf
     ∇
 :EndNamespace

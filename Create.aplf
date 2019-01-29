@@ -1,5 +1,5 @@
  msg←{opts}Create(ns dir)
- ;Default;isWin;container;z;links;Qt;fsw;ix;linkDef;outFail;inFail;nsref;win;nsrefs;link;Arrow;arrow;OsSlash;isChild;⎕IO
+ ;isWin;container;z;links;fsw;ix;linkDef;outFail;inFail;nsref;win;nsrefs;link;arrow;⎕IO
  :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
@@ -15,7 +15,6 @@
      msg←⍕⍬⊤⍬
      opts←DefaultOpts'opts'⎕NS ⍬
      (container ns)←⎕RSI ⎕XSI U.ContainerNs ns
-     isChild←U.IsChild ns
 
      dir↓⍨←-'/\'∊⍨⊃⌽dir
      :If ⎕NEXISTS dir
@@ -24,23 +23,17 @@
          dir←∊1 ⎕NPARTS dir ⍝ normalise name
      :EndIf
 
-     win←'Windows'≡7↑⊃'.'⎕WG'APLVersion'
-     OsSlash←'\'@{⍵='/'}⍣win
-     dir←OsSlash dir
+     dir←U.WinSlash dir
 
-     Arrow←{
-         lr←'←→'/⍨2 2⊤'dir' 'ns' 'both'⍳⊂⍵.watch
-         ⍵.ns,' ',lr,' ',OsSlash ⍵.dir
-     }
-     :If ~win
+     :If ~U.isWindows
      :AndIf (⊂opts.watch)∊'both' 'dir'
          msg←'Watching directories is only supported under Microsoft Windows'
-     :ElseIf isChild>0 9.1∊⍨container.⎕NC⊂ns ⍝ must be normal namespace
+     :ElseIf (U.IsChild ns)>0 9.1∊⍨container.⎕NC⊂ns ⍝ must be normal namespace
          msg←'Unavailable: ',ns
      :ElseIf ×≢⎕SE.Link.Links⊣nsref←⍎ns container.⎕NS ⍬
      :AndIf nsref∊nsrefs←⍎¨⎕SE.Link.Links.ns
          link←⎕SE.Link.Links⊃⍨nsrefs⍳nsref
-         msg←'Already linked: ',Arrow link
+         msg←'Already linked: ',U.Arrow link
      :ElseIf {16::0 ⋄ 1⊣⎕SRC ⍵}nsref
          msg←'Scipted: ',ns
      :ElseIf ~⎕NEXISTS dir←∊1 ⎕NPARTS dir
@@ -72,7 +65,7 @@
          linkDef←⎕SE.⎕NS opts
 
          'linkDef'⎕NS'ns' 'dir' 'inFail' 'outFail'
-         arrow←Arrow linkDef
+         arrow←U.Arrow linkDef
          linkDef.⎕DF 1⌽'][',arrow
          ⎕SE.Link.Links,←linkDef
          msg←⊃{⍺,'; ',⍵}/msg,⍨⊂'Linked: ',arrow

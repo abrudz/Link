@@ -1,5 +1,5 @@
  msg←Remove items
- ;SplitName;roots;this;table;itemlist;filelist;files;mask
+ ;roots;this;table;itemlist;filelist;files;mask
  :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf

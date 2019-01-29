@@ -1,5 +1,5 @@
  msg←Break nss
- ;ns;linked;broken;missing;mask;⎕IO;there;List
+ ;ns;linked;broken;missing;mask;⎕IO;there
  :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
@@ -30,12 +30,11 @@
              :EndIf
          :EndFor
          msg←0⍴⊂''
-         List←∊(' ',⍕)¨
          :If ×≢broken
-             msg,←⊂'Unlinked:',List broken
+             msg,←⊂'Unlinked:',U.List broken
          :EndIf
          :If ×≢missing
-             msg,←⊂'Not found:',List missing
+             msg,←⊂'Not found:',U.List missing
          :EndIf
          msg←⊃{⍺,'; ',⍵}/msg
      :Else

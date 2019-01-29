@@ -1,5 +1,5 @@
  {r}←Notify args
- ;type;path;oldpath;linked;link;i;folder;name;extn;nsname;ns;effect;z;affected;newname;oldname;resp;dispPath;dispNs;cap;text;⎕TRAP;links;Check;above;regex
+ ;type;path;oldpath;linked;link;i;folder;name;extn;nsname;ns;effect;z;affected;newname;oldname;resp;dispPath;dispNs;cap;text;⎕TRAP;links;above;regex
 ⍝ Notify Link system that an external file has changed
 ⍝ Usually called by FileSystemWatcher
 
@@ -7,7 +7,7 @@
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
  :Trap DEBUG↓0
-     Check←→0⍴⍨¯1∊∘⎕NC'/'∘≠⊆⊢ ⍝ leave early if any bad name (yes, it should say "←→")
+     U.Check←→0⍴⍨¯1∊∘⎕NC'/'∘≠⊆⊢
 
      r←⍬
 
@@ -19,7 +19,7 @@
      link←i⊃⎕SE.Link.Links
 
      (folder name extn)←⎕NPARTS path
-     Check name ⍝ invalid item name
+     U.Check name ⍝ invalid item name
 
      regex←'^' '\*' '\?' '$'⎕R'^' '.*' '.' '$'⊢link.extn~'.' ⍝ convert glob to regex
      →0~regex ⎕S 2⊢extn~'.' ⍝ check extn
@@ -27,7 +27,7 @@
      folder←¯1↓folder ⍝ drop trailing /
 
      nsname←(1+≢link.dir)↓folder
-     Check nsname/⍨link.flatten
+     U.Check nsname/⍨link.flatten
      ((nsname='/')/nsname)←'.'
 
       ⍝ check visibility
