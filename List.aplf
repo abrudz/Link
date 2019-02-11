@@ -15,7 +15,7 @@
              nss←⍕¨⎕SE.Link.Links.ns
              list⌿⍨←ns∘(⊃⍷)¨nss
          :EndIf
-         lineages←{⍕¨{∪(⊃⍵).##,⍵}⍣≡2⊃⍵}¨5177⌶⍬
+         lineages←{⍕¨{∪(⊃⍵).##,⍵}⍣≡2⊃⍵}¨U.GetInfos
          list,←+/lineages∘.∊⍨⊂¨⊣/list
          list⍪⍨←'Namespace' 'Directory' 'Scripts'
      :Else

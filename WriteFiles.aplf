@@ -14,8 +14,7 @@
 
      Path←{ ⍝ Ns path → full path
          ⍺←'/'
-         (types exts)←↓{⍵,⌊@1⊢⍵}⍉opts.typeExtensions
-         tail←(types⍳⍺)⊃'/',⍨'.',¨exts
+         tail←opts U.Tail ⍺
          tail,⍨'/'@{'.'=⍵}dir,⍵  ⍝ append appropriate tail and convert / to .
      }
 

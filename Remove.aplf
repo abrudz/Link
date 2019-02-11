@@ -11,7 +11,7 @@
          roots←{⍵↑⍨⍵⍳'.'}¨items
          this←⊃⎕RSI ⎕XSI U.ContainerNs ⍬
          items,¨⍨←/∘this¨~roots∊,¨'#' '⎕SE' '⎕DMX'
-         table←5177⌶⍬
+         table←U.GetInfos⍬
          itemlist←{(⍕1⊃⍵),'.',⊃⍵}¨table
          filelist←(3⊃¨table),⊂''
          mask←items∊itemlist

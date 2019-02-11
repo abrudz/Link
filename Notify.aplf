@@ -12,9 +12,9 @@
      r←⍬
 
      (type path oldpath)←{⍵,(≢⍵)↓'' '' ''},⊆args
-     (path oldpath)←{(0≠≢⍵)/U.Normalise ⍵}¨path oldpath
+     (path oldpath)←{(0≠≢⍵)/U.Norm ⍵}¨path oldpath
 
-     linked←{0::⍬ ⋄ U.Normalise¨⎕SE.Link.Links.dir}⍬
+     linked←{0::⍬ ⋄ U.Norm¨⎕SE.Link.Links.dir}⍬
      →((≢linked)<i←1⍳⍨linked≡¨(≢¨linked)↑¨⊂path)⍴0 ⍝ not linked => done
      link←i⊃⎕SE.Link.Links
 
@@ -135,7 +135,7 @@
                  ns⍎name,'←',oldname                   ⍝ copy it
                  (⍎(⍕ns),'.',name).⎕DF(⍕ns),'.',name   ⍝ give it a nice name
                  ns.⎕EX oldname                        ⍝ expunge old
-                 links←U.Normalise¨4⊃¨5177⌶⍬
+                 links←U.Norm¨U.GetInfos'file'
                  links←(((≢oldpath)↑¨links)∊⊂oldpath)/links
                  links←(⊂path),¨(≢oldpath)↓¨links
                  :For link :In links

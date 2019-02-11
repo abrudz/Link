@@ -6,7 +6,7 @@
  :Trap DEBUG↓0
      ⎕IO←0
      files←{∊1 ⎕NPARTS ⍵}¨⊆file
-     table←5177⌶⍬
+     table←U.GetInfos⍬
      filelist←{∊1 ⎕NPARTS 3⊃⍵}¨table
      itemlist←(2↑¨table),⊂'' ''
      items←itemlist[filelist⍳files]

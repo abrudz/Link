@@ -1,11 +1,10 @@
-﻿:Namespace Utils
+﻿:Namespace U ⍝ Utils
     ⍝ Utilities shared by Link infrastructure
     :Section Constants
-    ##.U←⎕THIS ⍝ shortcut
     isWindows←'Win'≡3↑⊃# ⎕WG'APLVersion'
     :EndSection
 
-    Normalise←{∊1⎕NPARTS ⍵}
+    Norm←{∊1⎕NPARTS ⍵}
     Strip←{⍵↓⍨-'/'⍳⍨⌽⍵}
     Shortest←{⍵⊃⍨{⍵⍳⌊/⍵}≢¨⍵}
     Slash←{⍵∊'/\'}                          ⍝ Mark slashes
@@ -52,14 +51,17 @@
           Norm←{ns←⍕⍵ ⋄ 9∊⎕NC ns:⍕⍎ns ⋄ ns}
           '#⎕'∊⍨⊃ns:# _ Norm ns⊣' *** Invalid target'Resignal ¯1∊⎕NC ns
           container←⊃⌽2⍴rsi↓⍨xsi{(⍵∊⍺)×¯1+⍺⍳⍵}⊂'⎕SE.UCMD'
-          container _ Norm container,'.',ns
+          container _ Norm(⍕container),'.',ns
       }
 
       IsDir←{
           22::0
           1=1 ⎕NINFO ⍵
       }
-
+      Tail←{ ⍝ ⍺:opts; ⍵:nc
+          (types exts)←↓{⍵,⌊@1⊢⍵}⍉⍺.typeExtensions
+          (types⍳⍺)⊃'/',⍨'.',¨exts
+      }
     ∇ d←debug
       :If 0=⎕NC'##.DEBUG'
           d←##.DEBUG←0
@@ -78,13 +80,22 @@
           :EndIf
       :EndTrap
     ∇
-    ∇ r←GetLinkInfo(ns name)
-    ⍝ Return link info or ⍬
-      r←5179(ns.⌶)name
-    ∇
     ∇ r←GetFileInfo file
     ⍝ Return links to file
       r←5174⌶file
+    ∇
+    ∇ r←GetInfos column
+      :If ''≡0⍴column
+          column←'name' 'parent' 'nc' 'file' 'line' 'lines' 'hash' 'ts'⍳⊂column
+      :EndIf
+      r←column∘⊃¨5177⌶⍬
+    ∇
+    ∇ n←RemoveInfos names
+      n←+/5178⌶¨⊆names
+    ∇
+    ∇ r←GetLinkInfo(ns name)
+    ⍝ Return link info or ⍬
+      r←5179(ns.⌶)name
     ∇
     ∇ r←GetRefTo nsname;name;nc
      ⍝ Get a reference to a container namespace (or ⍬ if that is not possible)

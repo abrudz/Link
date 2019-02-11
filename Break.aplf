@@ -1,5 +1,5 @@
  msg←Break nss
- ;ns;linked;broken;missing;mask;⎕IO;there
+ ;ns;linked;broken;missing;mask;⎕IO;there;n
  :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
  :EndIf
@@ -20,9 +20,11 @@
          linked←⍎¨⎕SE.Link.Links.ns
          broken←0⍴⊂''
          missing←0⍴⊂''
+         n←0
          :For ns :In nss
              mask←linked≠ns
              :If 0∊mask
+                 n+←U.RemoveInfos(⍕⍎ns)∘{⊃⍺⍷⍕¨⍵}U.GetInfos'parent'
                  ⎕SE.Link.Links/⍨←mask
                  broken,←⊂ns
              :Else
@@ -31,7 +33,7 @@
          :EndFor
          msg←0⍴⊂''
          :If ×≢broken
-             msg,←⊂'Unlinked:',U.List broken
+             msg,←⊂'Unlinked ',(⍕n),' files:',U.List broken
          :EndIf
          :If ×≢missing
              msg,←⊂'Not found:',U.List missing

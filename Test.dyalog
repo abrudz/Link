@@ -11,8 +11,6 @@
               →0
           :EndIf
          
-          U←##.Utils
-         
           {}⎕SE.UCMD'udebug on'
           ⎕SE.Link.DEBUG←0 ⍝ 1 = Trace, 2 = Stop on entry
          
