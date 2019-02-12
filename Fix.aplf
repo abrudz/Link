@@ -36,10 +36,8 @@
          nc←ns.⎕NC⊂,name
          :If 0<≢file←4⊃U.GetLinkInfo ns name ⍝ Already saved in a file
          :AndIf name≡oldname                  ⍝ Function not renamed
-             :If link.forceExtensions
-                 file←(∊2↑⎕NPARTS file),link U.Tail nc
-             :EndIf
-              ⍝ Interpreter will do everything needed here
+             file←∊{name}¨@2⍣link.forceFilenames{link U.Tail nc}¨@3⍣link.forceExtensions ⎕NPARTS file
+             ⍝ Interpreter will do everything needed here
          :ElseIf ~link.flatten                ⍝ Not flattened
 
              file←(≢link.ns)↓⍕ns              ⍝ Add sub.namespace structure
