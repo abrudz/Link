@@ -3,10 +3,6 @@
  :If forced←msg≡1
  :OrIf 'WorkspaceLoaded'≡2⊃msg
 
-     :If ×⎕NC'⎕SE.Link.Links'
-         ⎕SE.Link.Links/⍨←0
-     :EndIf
-
      :Trap 0 ⍝ ignore custom sessions without font selector
          :If 0≠⎕NC f←'⎕SE.cbtop.bandtb5.tb' ⍝ skip non GUI environments
              tb←⍎f ⍝ Initialize font picker
