@@ -1,10 +1,11 @@
  r←startup
  ;⎕IO;⎕ML ⍝ sysvars
- ;Env;Dir;Path;NoSlash;Fix ⍝ fns
- ;win;dirs;root;dir;subdir;ref;files;paths;path;roots;os;ver;envVars;defaults ⍝ vars
+ ;Env;Dir;Path;NoSlash;Fix;AutoStatus ⍝ fns
+ ;win;dirs;root;dir;subdir;ref;files;paths;path;roots;os;ver;envVars;defaults;as ⍝ vars
 
  ⎕IO←⎕ML←1
 
+ AutoStatus←2036⌶
  Env←{2 ⎕NQ #'GetEnvironment'⍵}
  NoSlash←{⍵↓⍨-'/\'∊⍨⊃⌽⍵} ⍝ remove trailing (back)slash
  Fix←{ ⍝ cover for ⎕FIX
@@ -52,6 +53,7 @@
  paths←'/StartupSession/' '/StartupWorkspace/'Path¨envVars
  roots←⎕SE #
 
+ as←AutoStatus 0
  :For path root :InEach paths roots
      :For dir :In path
          files←2 Dir dir
@@ -64,3 +66,4 @@
          :EndFor
      :EndFor
  :EndFor
+ {}AutoStatus as
