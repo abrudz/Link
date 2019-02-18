@@ -1,4 +1,4 @@
- list←List ns
+ list←{opts}List ns;prop;L
  ;nss;lineages;there;ref
  :If U.debug=2
      (1+⊃⎕LC)⎕STOP⊃⎕SI
@@ -15,9 +15,16 @@
              nss←⍕¨⎕SE.Link.Links.ns
              list⌿⍨←ns∘(⊃⍷)¨nss
          :EndIf
-         lineages←{⍕¨{∪(⊃⍵).##,⍵}⍣≡2⊃⍵}¨U.GetInfos
+         lineages←{⍕¨{∪(⊃⍵).##,⍵}⍣≡2⊃⍵}¨U.GetInfos ⍬
          list,←+/lineages∘.∊⍨⊂¨⊣/list
          list⍪⍨←'Namespace' 'Directory' 'Scripts'
+         :If ~900⌶⍬ ⍝ dyadic
+         :AndIf ⍎∘'extended'⍣(9∊⎕NC'opts')⊢opts
+             L←819⌶
+             :For prop :In ('Case' 'Code')'Flatten'('Force' 'Extensions')('Force' 'Filenames')'Watch'
+                 list,←(⊂↑prop),⎕SE.Link.Links⍎¨⊂L@1∊prop
+             :EndFor
+         :EndIf
      :Else
          list←'No active links'
      :EndIf

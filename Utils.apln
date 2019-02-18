@@ -1,10 +1,22 @@
-﻿:Namespace U ⍝ Utils
-    ⍝ Utilities shared by Link infrastructure
+﻿:Namespace U ⍝ Utilities
+
     :Section Constants
     isWindows←'Win'≡3↑⊃# ⎕WG'APLVersion'
+    ∇ d←debug
+      :If 0=⎕NC'##.DEBUG'
+          d←##.DEBUG←0
+      :Else
+          d←##.DEBUG
+      :EndIf
+    ∇
     :EndSection
 
-    Norm←{∊1⎕NPARTS ⍵}
+    :Section Tacit necessary to avoid stack frame
+    Resignal←⎕SIGNAL{⍺←'' ⋄ ⍵/⊂⎕DMX.(('EN'EN)('Message'(Message,⍺)))}
+    Check←→0⍴⍨¯1∊∘⎕NC'/'∘≠⊆⊢ ⍝ leave early if any bad name (yes, it should say "←→")
+    :EndSection
+
+    :Section Strings
     Strip←{⍵↓⍨-'/'⍳⍨⌽⍵}
     Shortest←{⍵⊃⍨{⍵⍳⌊/⍵}≢¨⍵}
     Slash←{⍵∊'/\'}                          ⍝ Mark slashes
@@ -12,26 +24,48 @@
     Path←{⍵↓⍨-'/'⍳⍨⌽⍵}                      ⍝ Until last slash
     PadThis←{⍵,'⎕THIS'/⍨0=≢⍵}               ⍝ Default path to here
     NsExpr←{'''',⍵,'''⎕NS⍬'}                ⍝ Expression to create namespace
-    Where←{⍵⌿⍺}                             ⍝ Filter as function
     Begins←{⊃⍺⍷⍵}                           ⍝ ⍵ starts with ⍺
     WinSlash←'\'@Slash⍣isWindows
     DotSlash←'.'@Slash                      ⍝ Convert dots to slashes
     Nss←{,\'.',¨1↓U.Parts ⍵}                ⍝ Convert file path to ns path
     Combine←{(⍕⍺),⍨(326≠⎕DR ⍺)/'.',⍨⍕⍵}/
     IsChild←(⍕¨# ⎕SE ⎕DMX)∘{~⍺∊⍨⊂⍵}
-    GetCheckSum←{2 ⎕NQ #'GetBuildID' ⍵}
     List←{∊{' ',⍕⍵}¨⍵}
-    No0←{⍵~0}                               ⍝ Remove fills
-    _←{⍺ ⍵}
-
-    :Section Tacit necessary to avoid stack frame
-    Resignal←⎕SIGNAL{⍺←'' ⋄ ⍵/⊂⎕DMX.(('EN'EN)('Message'(Message,⍺)))}
-    Check←→0⍴⍨¯1∊∘⎕NC'/'∘≠⊆⊢ ⍝ leave early if any bad name (yes, it should say "←→")
-    :EndSection
-
-      Arrow←{
+      Arrow←{                               ⍝ appropriate symbol to show ns-dir connection
           lr←'←→'/⍨2 2⊤'dir' 'ns' 'both'⍳⊂⍵.watch
           ⍵.ns,' ',lr,' ',WinSlash ⍵.dir
+      }
+    :EndSection
+
+    :Section Covers for I-beams and other built-ins
+    GetLinkInfo←{⍺.(5179⌶)⍵}   ⍝ Return link info or ⍬
+    Where←{⍵⌿⍺}                             ⍝ Filter as function
+    Norm←{∊1⎕NPARTS ⍵} 
+    GetFileInfo←{5174⌶⍵}     ⍝ Return links to file 
+
+      GetInfos←{
+          ''≡0⍴⍵:∇'name' 'parent' 'nc' 'file' 'line' 'lines' 'hash' 'ts'⍳⊂⍵
+          ⍵∘⊃¨5177⌶⍬
+      }     
+
+      RemoveInfos←{
+          ⍺←⎕THIS
+          +/5178⌶¨⊆⍵
+      }          
+
+      OnEach←{ ⍝ ¨ without prototype call on empty
+          0∊⍴⍵:⍬ ⍝ if empty return empty
+          ⍺←⊢      ⍝ ambivalent
+          ⍺ ⍺⍺¨⍵ ⍝ call
+      }
+    :EndSection
+    
+    :Section Files
+    FileHash←{2 ⎕NQ #'GetBuildID' ⍵}
+      
+      IsDir←{
+          22::0
+          1=1 ⎕NINFO ⍵
       }
 
       Into←{ ⍝ Put vtv into file
@@ -40,35 +74,22 @@
           0⊣⍵ 1 ⎕NPUT⍨⊂⍺         ⍝ overwrite
       }
 
-      OnEach←{ ⍝ ¨ without prototype call on empty
-          0∊⍴⍵:⍬ ⍝ if empty return empty
-          ⍺←⊢      ⍝ ambivalent
-          ⍺ ⍺⍺¨⍵ ⍝ call
-      }
+    :EndSection
 
+    :Section Lookup
       ContainerNs←{(rsi xsi)←⍺ ⋄ ns←⍵
-          326=⎕DR ns:# _⍕ns
+          326=⎕DR ns:#(⍕ns)
           Norm←{ns←⍕⍵ ⋄ 9∊⎕NC ns:⍕⍎ns ⋄ ns}
-          '#⎕'∊⍨⊃ns:# _ Norm ns⊣' *** Invalid target'Resignal ¯1∊⎕NC ns
+          '#⎕'∊⍨⊃ns:#(Norm ns⊣' *** Invalid target'Resignal ¯1∊⎕NC ns)
           container←⊃⌽2⍴rsi↓⍨xsi{(⍵∊⍺)×¯1+⍺⍳⍵}⊂'⎕SE.UCMD'
-          container _ Norm(⍕container),'.',ns
+          container(Norm(⍕container),'.',ns)
       }
 
-      IsDir←{
-          22::0
-          1=1 ⎕NINFO ⍵
-      }
       Tail←{ ⍝ ⍺:opts; ⍵:nc
           (types exts)←↓{⍵,⌊@1⊢⍵}⍉⍺.typeExtensions
           (types⍳⍺)⊃'/',⍨'.',¨exts
       }
-    ∇ d←debug
-      :If 0=⎕NC'##.DEBUG'
-          d←##.DEBUG←0
-      :Else
-          d←##.DEBUG
-      :EndIf
-    ∇
+
     ∇ r←GetName file;code;ns
     ⍝ Attempt to determine the name which will be defined by a file
      
@@ -80,23 +101,7 @@
           :EndIf
       :EndTrap
     ∇
-    ∇ r←GetFileInfo file
-    ⍝ Return links to file
-      r←5174⌶file
-    ∇
-    ∇ r←GetInfos column
-      :If ''≡0⍴column
-          column←'name' 'parent' 'nc' 'file' 'line' 'lines' 'hash' 'ts'⍳⊂column
-      :EndIf
-      r←column∘⊃¨5177⌶⍬
-    ∇
-    ∇ n←RemoveInfos names
-      n←+/5178⌶¨⊆names
-    ∇
-    ∇ r←GetLinkInfo(ns name)
-    ⍝ Return link info or ⍬
-      r←5179(ns.⌶)name
-    ∇
+
     ∇ r←GetRefTo nsname;name;nc
      ⍝ Get a reference to a container namespace (or ⍬ if that is not possible)
       nc←⎕NC⊂name
@@ -117,4 +122,6 @@
           :EndTrap
       :EndIf
     ∇
+    :EndSection
+
 :EndNamespace

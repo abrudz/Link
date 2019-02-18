@@ -9,10 +9,10 @@
      opts←DefaultOpts'opts'⎕NS ⍬
 
      source↓⍨←-U.Slash⊃⌽source                  ⍝ Remove slash from end
-     cands←⊃⎕NINFO⍠1⊢source,'*'               ⍝ normalised source candidates
-     candLengths←≢¨cands                      ⍝ their lengths
+     cands←⊃⎕NINFO⍠1⊢source,'*'                 ⍝ normalised source candidates
+     candLengths←≢¨cands                        ⍝ their lengths
 
-     source←cands⊃⍨candLengths⍳≢source        ⍝ first length-match
+     source←cands⊃⍨candLengths⍳≢source          ⍝ first length-match
      name←⊃⌽U.Parts source                      ⍝ name without path
 
      File←{ ⍝ Prepare file by getting source or prepending prefix
@@ -30,37 +30,37 @@
              inFail←fsw←⍬
          :EndIf
      :Else
-         source,←'/'                              ⍝ append missing slash
-         list←0 1 6 ⎕NINFO⍠1⍠'Recurse' 1⊢source,'*' ⍝ recursive listing of everything
+         source,←'/'                                     ⍝ append missing slash
+         list←0 1 6 ⎕NINFO⍠1⍠'Recurse' 1⊢source,'*'      ⍝ recursive listing of everything
 
 
-         hideBit←1=3⊃list                         ⍝ mask for hidden items
-         hidden←⊃list U.Where¨⊂hideBit              ⍝ list of hidden (files and) folders
-         hidden,¨←'/'                             ⍝ protect agains similarly named items
-         list←list U.Where¨⊂~hideBit                ⍝ keep only visible items
-         list←list U.Where¨⊂~∨⌿hidden∘.U.Begins⊃list  ⍝ filter away things that come below hidden things
-         list↓⍨←¯1                                ⍝ remove hideBit column
+         hideBit←1=3⊃list                                ⍝ mask for hidden items
+         hidden←⊃list U.Where¨⊂hideBit                   ⍝ list of hidden (files and) folders
+         hidden,¨←'/'                                    ⍝ protect agains similarly named items
+         list←list U.Where¨⊂~hideBit                     ⍝ keep only visible items
+         list←list U.Where¨⊂~∨⌿hidden∘.U.Begins⊃list     ⍝ filter away things that come below hidden things
+         list↓⍨←¯1                                       ⍝ remove hideBit column
 
          RightExtn←{opts.codeExtensions∊⍨⊂1↓⊃⌽⎕NPARTS ⍵} ⍝ Ends with specified extension?
 
-         Files←{⍵ U.Where RightExtn¨⍵}              ⍝ Those that end with specified extension
+         Files←{⍵ U.Where RightExtn¨⍵}                   ⍝ Those that end with specified extension
 
-         files←Files⊃U.Where/2=@2⊢list              ⍝ second column has 2 for files; first column is filename
-         dirs←⊃U.Where/1=@2⊢list                    ⍝ second column has 1 for dirs
-         dirs,¨←'/'                               ⍝ give the dirs trailing slashes
-         list←dirs⍪files                          ⍝ we need to process dirs before files
-         order←⍋9999999@{47=⍵}↑⎕UCS¨list          ⍝ slashes after all chars
-         list←order⊃¨⊂list                        ⍝ sort the list
+         files←Files⊃U.Where/2=@2⊢list                   ⍝ second column has 2 for files; first column is filename
+         dirs←⊃U.Where/1=@2⊢list                         ⍝ second column has 1 for dirs
+         dirs,¨←'/'                                      ⍝ give the dirs trailing slashes
+         list←dirs⍪files                                 ⍝ we need to process dirs before files
+         order←⍋9999999@{47=⍵}↑⎕UCS¨list                 ⍝ slashes after all chars
+         list←order⊃¨⊂list                               ⍝ sort the list
 
-         RemDir←{⍵↓⍨≢source}                      ⍝ Only path beginning at target source
+         RemDir←{⍵↓⍨≢source}                             ⍝ Only path beginning at target source
 
-         paths←∪RemDir∘U.Path¨list                  ⍝ paths of all unique items
-         paths~←⊂''                               ⍝ remove empty
+         paths←∪RemDir∘U.Path¨list                       ⍝ paths of all unique items
+         paths~←⊂''                                      ⍝ remove empty
 
-         :If ~opts.flatten                        ⍝ If we are not flattening, create nss
-             nss←U.DotSlash¨paths                   ⍝ all necessary namespaces
-             nss/⍨←(¯1=⎕NC nss)⍱('.'∊¨nss)        ⍝ keep only names that are neither invalid nor compound
-             target.⍎∘U.NsExpr¨(~opts.flatten)/nss  ⍝ create namespaces in target
+         :If ~opts.flatten                               ⍝ If we are not flattening, create nss
+             nss←U.DotSlash¨paths                        ⍝ all necessary namespaces
+             nss/⍨←(¯1=⎕NC nss)⍱('.'∊¨nss)               ⍝ keep only names that are neither invalid nor compound
+             target.⍎∘U.NsExpr¨(~opts.flatten)/nss       ⍝ create namespaces in target
          :EndIf
 
          Target←{'.'@U.Slash U.PadThis(~opts.flatten)/U.Path RemDir ⍵} ⍝ Determine target path

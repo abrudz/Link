@@ -48,14 +48,14 @@
              nc←⊃source.⎕NC ⍵
              nr U.Into nc Path ⍵
          }
-         (failed unscripted)←U.No0¨↓⍉↑SaveNs U.OnEach nss ⍝ go through them
-         paths←Path U.OnEach unscripted              ⍝ needed dirs
-         ok←{⎕NEXISTS ⍵⊣3 ⎕MKDIR ⍵}U.OnEach paths ⍝ Try and make sure dir exists
-         fns←source.⎕NL-okFn                          ⍝ tradfn, dfn, tradop, dop
-         failed,←U.No0 SaveFn U.OnEach fns                ⍝ try to save the functions
-         failed,←paths/⍨~ok                           ⍝ also remember failed paths for nss
-         paths/⍨←ok                                   ⍝ the good paths
-         unscripted/⍨←ok                              ⍝ and their namespaces
+         (failed unscripted)←0~¨⍨↓⍉↑SaveNs U.OnEach nss ⍝ go through them
+         paths←Path U.OnEach unscripted                 ⍝ needed dirs
+         ok←{⎕NEXISTS ⍵⊣3 ⎕MKDIR ⍵}U.OnEach paths       ⍝ Try and make sure dir exists
+         fns←source.⎕NL-okFn                            ⍝ tradfn, dfn, tradop, dop
+         failed,←0~¨⍨SaveFn U.OnEach fns                ⍝ try to save the functions
+         failed,←paths/⍨~ok                             ⍝ also remember failed paths for nss
+         paths/⍨←ok                                     ⍝ the good paths
+         unscripted/⍨←ok                                ⍝ and their namespaces
 
          outFail←failed,⊃,/unscripted{opts WriteFiles(source.⍎⍺)⍵}U.OnEach paths  ⍝ recurse and collect failures
      :Else ⍝ invalid type

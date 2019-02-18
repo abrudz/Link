@@ -68,7 +68,7 @@
          :If 0≠≢z←U.GetName path     ⍝ try to extract the name
              name←z
          :EndIf
-         :If 0≠≢z←4⊃U.GetLinkInfo ns name  ⍝ Redefines existing object with a source file
+         :If 0≠≢z←4⊃ns U.GetLinkInfo name  ⍝ Redefines existing object with a source file
          :AndIf ⎕NEXISTS z       ⍝ ... and that file exists
              affected←(⍕ns),'.',name
              Log'(created): ignoring new file ',path
@@ -77,11 +77,11 @@
          :EndIf
 
      :Case 'changed'               ⍝ Update to existing file?
-         :If 0≠≢z←4⊃U.GetLinkInfo ns name      ⍝ name already linked
+         :If 0≠≢z←4⊃ns U.GetLinkInfo name      ⍝ name already linked
          :AndIf name≡U.GetName path            ⍝ name matches file contents
          :AndIf (U.Normalise path)≡U.Normalise 4⊃z  ⍝ to the same file name
              effect←1 ⋄ affected←(⍕ns),name
-             :If (7⊃z)≡U.GetCheckSum path
+             :If (7⊃z)≡U.FileHash path
                  Log'(change) ignored, checksum unchanged: ',path
                  →0
              :Else
@@ -108,7 +108,7 @@
              :EndIf
 
              :If name≢newname←U.GetName path             ⍝ repeated in create
-             :AndIf 0≠≢⊃z←U.GetLinkInfo ns newname       ⍝ name inside is already linked
+             :AndIf 0≠≢⊃z←ns U.GetLinkInfo newname       ⍝ name inside is already linked
                  affected←(⍕ns),'.',name
                  Log'(created): ignoring changed file ',path
                  Log'           attempts to redefine ',affected,' which is linked to ',4⊃z
@@ -150,7 +150,7 @@
          :EndIf
 
          oldname←2⊃⎕NPARTS oldpath                    ⍝ rename - not of a folder
-         :If 0≠≢⊃z←U.GetLinkInfo ns oldname           ⍝ old name *is* linked to this file
+         :If 0≠≢⊃z←ns U.GetLinkInfo oldname           ⍝ old name *is* linked to this file
              effect←1 ⋄ affected←(⍕ns),'.',name
              Log'(rename) ',(⍕ns),'.',oldname,' → ',affected
 
@@ -160,7 +160,7 @@
                  Log'(rename): ',affected,' was previously linked to ',path
              :Else
                  :If 0≠≢name←U.GetName path
-                     :If 0≠≢⊃z←U.GetLinkInfo ns name ⍝ but name inside is already linked
+                     :If 0≠≢⊃z←ns U.GetLinkInfo name ⍝ but name inside is already linked
                      :AndIf ⎕NEXISTS 4⊃z             ⍝ to a file which exists
                          affected←(⍕ns),'.',name
                          Log'(created): ignoring changed file ',path
@@ -177,7 +177,7 @@
          :EndIf
 
      :Case 'deleted'
-         :If 0≠≢U.GetLinkInfo ns name   ⍝ existing name is linked to this file
+         :If 0≠≢ns U.GetLinkInfo name   ⍝ existing name is linked to this file
          :OrIf 9.1=ns.⎕NC⊂name          ⍝ it identifies a namespace
              effect←1 ⋄ affected←(⍕ns),'.',name
              Log'(delete) of ',affected
