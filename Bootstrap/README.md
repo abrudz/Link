@@ -5,9 +5,9 @@ In Dyalog APL versions before 17.1, `Link` must be manually added to the existin
 1. A *standard* 17.0 session, namely the .dse file installed with Dyalog APL.
 1. A *clean* 17.0 session, in the sense that it does not use the `WorkspaceLoaded` event (it is normally used by SALT, the font and font-size selectors, and the "Boxing on/off" button), for example, because no session file was loaded at startup.
 
-If you have a custom session, see below.
+If you have a custom session, [see below](#installing-into-a-custom-session).
 
-## Instructions
+## General installation instructions
 
 In the below, **[DYALOG]** refers to the 17.0 install directory.
 
