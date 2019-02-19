@@ -26,7 +26,7 @@ In the below, **[DYALOG]** refers to the 17.0 install directory.
 
 `Link` can still be enabled in a session which *does* use the `WorkspaceLoaded` event:
 
-1. Follow steps 1 through 3 above.
+1. Follow steps 1 through 2 above.
 
 1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⊃1⌽l⊃⍨⍵⍳⍨1⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:
 ```
