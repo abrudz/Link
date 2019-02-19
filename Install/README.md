@@ -32,7 +32,7 @@ In the below, **[DYALOG]** refers to the 17.0 install directory.
 
 1. Follow steps 1 and 2 above.
 
-1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕IO←1⋄2⊃l⊃⍨⍵⍳⍨1⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:
+1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:
 ```
  ;boot;Env
  boot←⎕AI{⎕IO←1 ⋄ ⍵:0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'≡4⊃# ⎕WG'APLVersion'
