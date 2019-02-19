@@ -1,11 +1,15 @@
-# How to bootstrap `Link`
+# Installation
 
-In Dyalog APL versions before 17.1, `Link` must be manually added to the existing session (stored in a .dse file). There are two targets for easily doing so:
+`Link` installed with Dyalog APL versions 17.1 and newer.
+
+In Dyalog APL versions before 17.0, `Link` must be manually be added to the existing session (stored in a .dse file). There are two targets for easily doing so:
 
 1. A *standard* 17.0 session, namely the .dse file installed with Dyalog APL.
 1. A *clean* 17.0 session, in the sense that it does not use the `WorkspaceLoaded` event (it is normally used by SALT, the font and font-size selectors, and the "Boxing on/off" button), for example, because no session file was loaded at startup.
 
 If you have a custom session, [see below](#installing-into-a-custom-session).
+
+`Link` is not compatible with Dyalog APL version 16.0 or older.
 
 ## General installation instructions
 
