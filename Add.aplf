@@ -10,13 +10,13 @@
      items←⊆,items
      items~¨←' '
      roots←{⍵↑⍨⍵⍳'.'}¨items
-     this←⊃⎕RSI ⎕XSI U.ContainerNs ⍬
+     this←'.',⍨⍕⊃⎕RSI ⎕XSI U.ContainerNs ⍬
      items,¨⍨←/∘this¨~roots∊,¨'#' '⎕SE' '⎕DMX'
      added←0⍴⊂''
      unfound←0⍴⊂''
      :For item :In items
          :If ×≢⎕NC item
-             (ns name)←item⊂⍨⌽≤\⌽item≠'.'
+             (ns name)←item⊆⍨⌽≤\⌽item≠'.'
              ns name Fix''
              added,←⊂item
          :Else

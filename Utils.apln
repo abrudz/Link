@@ -86,8 +86,11 @@
       }
 
       Tail←{ ⍝ ⍺:opts; ⍵:nc
-          (types exts)←↓{⍵,⌊@1⊢⍵}⍉⍺.typeExtensions
-          (types⍳⍺)⊃'/',⍨'.',¨exts
+          0∊⍵,''≢0⍴⍵:'/'
+          (types exts)←↓⍉⍺.typeExtensions
+          exts,¨⍨←'.'
+          exts,←⊂'dyalog'
+          exts⊂⍨⌊/types⍳⍵,⌊⍵
       }
 
     ∇ r←GetName file;code;ns

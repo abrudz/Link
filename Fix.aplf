@@ -13,7 +13,8 @@
  :Trap DEBUG↓0
 
      nosrc←0=≢src
-     (ns name oldname)←3↑where,⊂''
+     (ns name oldname)←3↑where,'' ''
+     ns←⍎⍣(''≡0⍴∊ns)⊢ns
      z←ns←⍬⍴ns
 
      (linked link)←0 ⍬
@@ -23,7 +24,7 @@
          nss←⍎¨⎕SE.Link.Links.ns
          :Repeat
              :If ~linked←z∊nss
-                 linked←(z←z.##)∊nss
+                 linked←(z←z⍎'##')∊nss
              :EndIf
          :Until linked∨z∊# ⎕SE ⎕DMX
          :If linked
@@ -43,12 +44,14 @@
              file←(≢link.ns)↓⍕ns              ⍝ Add sub.namespace structure
              ((file='.')/file)←'/'            ⍝ Convert dots to /
              file←link.dir,file               ⍝ Add link directory
+             file,←'/',name
              :If link.forceExtensions
+             :OrIf ~⎕NEXISTS file
                  ext←link U.Tail nc
              :Else
                  ext←3⊃⎕NPARTS file
              :EndIf
-             file,←'/',name,ext               ⍝ And the object name
+             file,←ext                        ⍝ And the object name
 
          :Else                                ⍝ New name in "flattened" link
          ⍝ NOT SURE THIS IS RIGHT. SEE ALSO BELOW! ↓↓↓
