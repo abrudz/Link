@@ -21,7 +21,7 @@
      AbsSaveFn←{ ⍝ Save single fn into target
          nr←source.⎕NR ⍵
          nc←⊃source.⎕NC ⍵
-         nr U.Into nc Path ⍵↑⍨1-'.'⍳⍨⌽⍵ ⍝ Item name without ns path
+         nr opts.caseCode U.Into nc Path ⍵↑⍨1-'.'⍳⍨⌽⍵ ⍝ Item name without ns path
      }
 
      nc←{⎕NC⊂,'⍵'}source
@@ -38,7 +38,7 @@
              src←⎕SRC source.⍎⍵    ⍝ get source from its location
              22::⍵ 0               ⍝ failed: no file access
              nc←⊃source.⎕NC ⍵
-             0 0⊣src U.Into nc Path ⍵ ⍝ save as namespace and report OK
+             0 0⊣src opts.caseCode U.Into nc Path ⍵ ⍝ save as namespace and report OK
          }
 
          nss←source.⎕NL-okNs
@@ -46,7 +46,7 @@
          SaveFn←{  ⍝ Save function there
              nr←source.⎕NR ⍵
              nc←⊃source.⎕NC ⍵
-             nr U.Into nc Path ⍵
+             nr opts.caseCode U.Into nc Path ⍵
          }
          (failed unscripted)←0~¨⍨↓⍉↑SaveNs U.OnEach nss ⍝ go through them
          paths←Path U.OnEach unscripted                 ⍝ needed dirs
