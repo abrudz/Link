@@ -40,7 +40,7 @@ In Dyalog APL version 17.0, `Link` must be manually be added to the existing ses
      :Trap 0
          (⎕NS ⍬).(⍎⎕FX)⎕IO⊃⎕NGET({×≢⍵:⍵ ⋄ '/startup.dyalog',⍨Env'DYALOG'}Env'DYALOGSTARTUP')1
      :Else
-         ⍞←⎕DMX{⎕IO←1 ⋄ OSError{⍵,(×≢⍺)/2⌽'") ("',3⊃⍺}Message{⍵,⍺,⍨': '/⍨×≢⍺}1⊃DM}⍬
+         ⎕DMX.{⎕IO←1 ⋄ OSError{⍵,(×≢3⊃⍺)/2⌽'") ("',3⊃⍺}Message{⍵,⍺,⍨': '/⍨×≢⍺}1⊃DM}⍬
      :EndTrap
  :EndIf</pre>Also ensure that the function ends with:<pre>
  :If ×⎕NC'⎕SE.Link.WSLoaded'
