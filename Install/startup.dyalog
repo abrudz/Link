@@ -40,8 +40,8 @@
              verSpec←{
                  ⍵:NoSlash 2⊃4070⌶⍬ ⍝ win only: version specific folder in user docs folder
                  home←NoSlash Env'HOME'
-                 num←3↑'.'~⍨ver
-                 uc←'uc'/⍨80 82=⎕DR'' ⍝ unicode/classic
+                 num←∊2↑'.'(≠⊆⊢)ver
+                 uc←'UC'/⍨80 82=⎕DR'' ⍝ unicode/classic
                  bits←¯2↑'32',{⍵↓⍨⍵⍳'-'}os
                  home,'/dyalog.',num,'.files'
              }⍵
