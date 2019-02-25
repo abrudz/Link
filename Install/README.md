@@ -11,38 +11,36 @@ In Dyalog APL version 17.0, `Link` must be manually be added to the existing ses
 ## Session that does *not* use the `WorkspaceLoaded` event
 
 1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
-1. Copy **Link/Bootstrap/startup.dyalog** into **[DYALOG]**
-1. `2⎕FIX'file://<path>/Link/Bootstrap/RemoveLinks.dyalog'`
-1. `2⎕FIX'file://<path>/Link/Bootstrap/WSLoaded-clean.dyalog'`
-1. `2⎕FIX'file://<path>/Link/Bootstrap/BUILD_DYALOGSPACE.dyalog'`
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
+1. `2⎕FIX'file://<path>/Link/Install/RemoveLinks.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/WSLoaded-clean.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/BUILD_DYALOGSPACE.dyalog'`
 1. Run `BUILD_DYALOGSPACE`
 1. Save the session
 
 ## 17.0 default session
 
 1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
-1. Copy **Link/Bootstrap/startup.dyalog** into **[DYALOG]**
-1. `2⎕FIX'file://<path>/Link/Bootstrap/RemoveLinks.dyalog'`
-1. `2⎕FIX'file://<path>/Link/Bootstrap/WSLoaded-default.dyalog'`
-1. `2⎕FIX'file://<path>/Link/Bootstrap/BUILD_DYALOGSPACE.dyalog'`
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
+1. `2⎕FIX'file://<path>/Link/Install/RemoveLinks.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/WSLoaded-default.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/BUILD_DYALOGSPACE.dyalog'`
 1. Run `BUILD_DYALOGSPACE`
 1. Save the session
 
 ## Session that *does* use the `WorkspaceLoaded` event
 
 1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
-1. Copy **Link/Bootstrap/startup.dyalog** into **[DYALOG]**
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
 1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:<pre>
  ;boot;Env
- boot←⎕AI{⎕IO←1 ⋄ ⍵:0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'≡4⊃# ⎕WG'APLVersion'
+ boot←⎕AI{⎕IO←1 ⋄ ⍵≡4⊃# ⎕WG'APLVersion':0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'
  :If boot ⍝ These things need to be done once at Dyalog startup, not on subsequent WSLoaded events:
      Env←{2 ⎕NQ #'GetEnvironment'⍵}
      :Trap 0
-         (⎕NS ⍬).(⍎⎕FX)⊃⎕NGET({×≢⍵:⍵ ⋄ '/startup.dyalog',⍨Env'DYALOG'}Env'DYALOGSTARTUP')1
+         (⎕NS ⍬).(⍎⎕FX)⎕IO⊃⎕NGET({×≢⍵:⍵ ⋄ '/startup.dyalog',⍨Env'DYALOG'}Env'DYALOGSTARTUP')1
      :Else
-         ⍞←↑⎕DMX.(Message∘{⍵,⍺,⍨': '/⍨×≢⍺}¨@1⊢DM)
-         ⎕DL 3
-         ⎕OFF
+         ⍞←⎕DMX{⎕IO←1 ⋄ OSError{⍵,(×≢⍺)/2⌽'") ("',3⊃⍺}Message{⍵,⍺,⍨': '/⍨×≢⍺}1⊃DM}⍬
      :EndTrap
  :EndIf</pre>Also ensure that the function ends with:<pre>
  :If ×⎕NC'⎕SE.Link.WSLoaded'
