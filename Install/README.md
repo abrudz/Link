@@ -32,8 +32,7 @@ In Dyalog APL version 17.0, `Link` must be manually be added to the existing ses
 
 1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
 1. Copy **Link/Bootstrap/startup.dyalog** into **[DYALOG]**
-1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:
-```
+1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:<pre>
  ;boot;Env
  boot←⎕AI{⎕IO←1 ⋄ ⍵:0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'≡4⊃# ⎕WG'APLVersion'
  :If boot ⍝ These things need to be done once at Dyalog startup, not on subsequent WSLoaded events:
@@ -45,12 +44,7 @@ In Dyalog APL version 17.0, `Link` must be manually be added to the existing ses
          ⎕DL 3
          ⎕OFF
      :EndTrap
- :EndIf
-```
-Also ensure that the function ends with:
-```
+ :EndIf</pre>Also ensure that the function ends with:<pre>
  :If ×⎕NC'⎕SE.Link.WSLoaded'
      ⎕SE.Link.WSLoaded
- :EndIf
-```
-Be especially careful to catch all occurrences of things like `→`, `→0`, `:GoTo 0`, `:Return` etc. and redirect them to reach the above code before the callback function terminates.
+ :EndIf</pre>Be especially careful to catch all occurrences of things like `→`, `→0`, `:GoTo 0`, `:Return` etc. and redirect them to reach the above code before the callback function terminates.
