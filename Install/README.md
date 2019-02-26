@@ -1,56 +1,48 @@
 # Installation
 
-`Link` installed with Dyalog APL versions 17.1 and newer.
+In the below, **[DYALOG]** refers to the Dyalog APL install directory.
 
-In Dyalog APL versions before 17.0, `Link` must be manually be added to the existing session (stored in a .dse file). There are two targets for easily doing so:
+`Link` is installed with Dyalog APL versions 17.1 and newer. To use `Link` from a non-standard 17.1+ session (the .dse file installed with Dyalog APL) where the `WorkspaceLoaded` event is unusued, follow the instructions for [Session that does *not* use the `WorkspaceLoaded` event](#session-that-does-not-use-the-workspaceloaded-event). If the `WorkspaceLoaded` is used for something else, follow the instructions for [Session that *does* use the `WorkspaceLoaded` event](#session-that-does-use-the-workspaceloaded-event).
 
-1. A *standard* 17.0 session, namely the .dse file installed with Dyalog APL.
-1. A *clean* 17.0 session, in the sense that it does not use the `WorkspaceLoaded` event (it is normally used by SALT, the font and font-size selectors, and the "Boxing on/off" button), for example, because no session file was loaded at startup.
-
-If you have a custom session, [see below](#installing-into-a-custom-session).
+In Dyalog APL version 17.0, `Link` must be manually be added to the existing session. To use `Link` from a default 17.0 session (the .dse file installed with Dyalog APL), follow the instructions for [17.0 default session](https://github.com/abrudz/Link/blob/master/Install/README.md#170-default-session). To use `Link` from a non-standard 17.0 session where the `WorkspaceLoaded` event is unusued, follow the instructions for [Session that does *not* use the `WorkspaceLoaded` event](#session-that-does-not-use-the-workspaceloaded-event). If the `WorkspaceLoaded` is used for something else, follow the instructions for [Session that *does* use the `WorkspaceLoaded` event](#session-that-does-use-the-workspaceloaded-event).
 
 `Link` is not compatible with Dyalog APL version 16.0 or older.
 
-## General installation instructions
+## Session that does *not* use the `WorkspaceLoaded` event
 
-In the below, **[DYALOG]** refers to the 17.0 install directory.
-
-1. Copy the **Link** directory's files into **[DYALOG]/Library/StartupSession/Link**
-1. Copy **Link/Bootstrap/startup.dyalog** into **[DYALOG]**
-1. `2⎕FIX'file://<path>/Link/Bootstrap/RemoveLinks.dyalog'`
-1. Depending on target system:
-
-   1. For a *standard* install: `2⎕FIX'file://<path>/Link/Bootstrap/WSLoaded-standard.dyalog'`
-   2. For a *clean* install: `2⎕FIX'file://<path>/Link/Bootstrap/WSLoaded-clean.dyalog'`
-1. `2⎕FIX'file://<path>/Link/Bootstrap/BUILD_DYALOGSPACE.dyalog'`
+1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
+1. `2⎕FIX'file://<path>/Link/Install/RemoveLinks.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/WSLoaded-clean.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/BUILD_DYALOGSPACE.dyalog'`
 1. Run `BUILD_DYALOGSPACE`
 1. Save the session
 
-## Installing into a custom session
+## 17.0 default session
 
-`Link` can still be enabled in a session which *does* use the `WorkspaceLoaded` event, but it is considerably more involved:
+1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
+1. `2⎕FIX'file://<path>/Link/Install/RemoveLinks.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/WSLoaded-default.dyalog'`
+1. `2⎕FIX'file://<path>/Link/Install/BUILD_DYALOGSPACE.dyalog'`
+1. Run `BUILD_DYALOGSPACE`
+1. Save the session
 
-1. Follow steps 1 and 2 above.
+## Session that *does* use the `WorkspaceLoaded` event
 
-1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:
-```
+1. Copy the **Link** directory's files into **[DYALOG]/StartupSession/Link**
+1. Copy **Link/Install/startup.dyalog** into **[DYALOG]**
+1. Edit the callback function for the `WorkspaceLoaded` event (as reported by `{⎕ML←1⋄⊃⌽l⊃⍨⍵⍳⍨⊃¨l←'⎕SE'⎕WG'Event'}⊂'WorkspaceLoaded'`) to insert the following code at the very top (it must begin at line `[1]`) of the function:<pre>
  ;boot;Env
- boot←⎕AI{⎕IO←1 ⋄ ⍵:0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'≡4⊃# ⎕WG'APLVersion'
+ boot←⎕AI{⎕IO←1 ⋄ ⍵≡4⊃# ⎕WG'APLVersion':0=4⊃⍺ ⋄ 15000≥3⊃⍺}'Development'
  :If boot ⍝ These things need to be done once at Dyalog startup, not on subsequent WSLoaded events:
      Env←{2 ⎕NQ #'GetEnvironment'⍵}
      :Trap 0
-         (⎕NS ⍬).(⍎⎕FX)⊃⎕NGET({×≢⍵:⍵ ⋄ '/startup.dyalog',⍨Env'DYALOG'}Env'DYALOGSTARTUP')1
+         (⎕NS ⍬).(⍎⎕FX)⎕IO⊃⎕NGET({×≢⍵:⍵ ⋄ '/startup.dyalog',⍨Env'DYALOG'}Env'DYALOGSTARTUP')1
      :Else
-         ⍞←↑⎕DMX.(Message∘{⍵,⍺,⍨': '/⍨×≢⍺}¨@1⊢DM)
-         ⎕DL 3
-         ⎕OFF
+         ⎕DMX.{⎕IO←1 ⋄ OSError{⍵,(×≢3⊃⍺)/2⌽'") ("',3⊃⍺}Message{⍵,⍺,⍨': '/⍨×≢⍺}1⊃DM}⍬
      :EndTrap
- :EndIf
-```
-Also ensure that the function ends with:
-```
+ :EndIf</pre>Also ensure that the function ends with:<pre>
  :If ×⎕NC'⎕SE.Link.WSLoaded'
      ⎕SE.Link.WSLoaded
- :EndIf
-```
-Be especially careful to catch all occurances of things like `→`, `→0`, `:GoTo 0`, `:Return` etc. and redirect them to reach the above code before the function terminates.
+ :EndIf</pre>Be especially careful to catch all occurrences of things like `→`, `→0`, `:GoTo 0`, `:Return` etc. and redirect them to reach the above code before the callback function terminates.
