@@ -36,7 +36,7 @@
 
      :If 0∊≢¨envVars
          defaults←{
-             dyalogLib←'/Library',⍨NoSlash Env'DYALOG'
+             dyalog←NoSlash Env'DYALOG'
              verSpec←{
                  ⍵:NoSlash 2⊃4070⌶⍬ ⍝ win only: version specific folder in user docs folder
                  home←NoSlash Env'HOME'
@@ -47,7 +47,7 @@
              }⍵
              user←⊃⎕NPARTS verSpec ⍝ /../
              verAgno←user,'dyalog.files' 'Dyalog APL Files'⊃⍨1+⍵
-             ∊¨1 ⎕NPARTS dyalogLib verAgno verSpec ⍝ normalise
+             ∊¨1 ⎕NPARTS dyalog verAgno verSpec ⍝ normalise
          }win
      :EndIf
 
